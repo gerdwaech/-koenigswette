@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Spiel – KÖNIGSWETTE{% endblock %}
+
+{% block content %}
+
+<h2>👑 KÖNIGSWETTE</h2>
+
+<p>Willkommen, {{ name }}!</p>
+
+<h3>Deine Wette</h3>
+
+<form method="POST">
+
+    <label for="king">Wer wird König?</label><br><br>
+
+    <input
+        type="text"
+        id="king"
+        name="king"
+        placeholder="Name eingeben"
+        required
+    >
+
+    <br><br>
+
+    <button type="submit">
+        👑 Wette abgeben
+    </button>
+
+</form>
+
+{% endblock %}
