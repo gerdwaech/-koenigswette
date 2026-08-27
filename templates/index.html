@@ -1,23 +1,190 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KÖNIGSWETTE</title>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}KÖNIGSWETTE 2026{% endblock %}
 
-    <h1>👑 KÖNIGSWETTE</h1>
+{% block content %}
 
-    <h2>Willkommen bei Königswette</h2>
+<h2>👑 {{ settings['event_name'] }}</h2>
+
+<p>
+    Wer wird unser neuer Schützenkönig?
+</p>
+
+<p>
+    💰 Aktueller Gesamtpool:
+    <strong>{{ "%.2f"|format(total) }} €</strong>
+</p>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p><strong>{{ message }}</strong></p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+{% if settings['is_open'] %}
+
+<hr>
+
+<h3>🎯 Auf einen Kandidaten setzen</h3>
+
+{% if candidates %}
+
+<form method="POST" action="{{ url_for('place_bet') }}">
+
+    <label for="bettor_name">Dein Name</label><br>
+    <input
+        type="text"
+        id="bettor_name"
+        name="bettor_name"
+        placeholder="Dein Name"
+        required
+    >
+
+    <br><br>
+
+    <label for="candidate_id">Wer wird König?</label><br>
+
+    <select id="candidate_id" name="candidate_id" required>
+        <option value="">Kandidaten auswählen</option>
+
+        {% for candidate in candidates %}
+        <option value="{{ candidate['id'] }}">
+            {{ candidate['name'] }}
+            {% if candidate['factor'] %}
+                – Faktor {{ candidate['factor'] }}
+            {% endif %}
+        </option>
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label for="amount">Einsatz in €</label><br>
+    <input
+        type="number"
+        id="amount"
+        name="amount"
+        min="1"
+        max="500"
+        step="1"
+        placeholder="z. B. 5"
+        required
+    >
+
+    <br><br>
+
+    <button type="submit">
+        👑 Wette abgeben
+    </button>
+
+</form>
+
+{% else %}
+
+<p>
+    Noch ist kein Kandidat im Rennen.
+    Trage unten den ersten Namen ein.
+</p>
+
+{% endif %}
+
+
+<hr>
+
+<h3>➕ Kandidaten ins Rennen schicken</h3>
+
+<p>
+    Jeder darf einen Namen vorschlagen.
+</p>
+
+<form method="POST" action="{{ url_for('add_candidate') }}">
+
+    <label for="name">Name des Kandidaten</label><br>
+
+    <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Name des möglichen Königs"
+        required
+    >
+
+    <br><br>
+
+    <label for="created_by">Vorgeschlagen von</label><br>
+
+    <input
+        type="text"
+        id="created_by"
+        name="created_by"
+        placeholder="Dein Name"
+    >
+
+    <br><br>
+
+    <button type="submit">
+        ➕ Kandidaten hinzufügen
+    </button>
+
+</form>
+
+{% else %}
+
+<h3>🔒 Die Königswette ist geschlossen</h3>
+
+<p>
+    Es können keine weiteren Wetten mehr abgegeben werden.
+</p>
+
+{% endif %}
+
+
+{% if candidates %}
+
+<hr>
+
+<h3>🏆 Aktuelles Rennen</h3>
+
+{% for candidate in candidates %}
+
+<div>
+
+    <h4>👑 {{ candidate['name'] }}</h4>
 
     <p>
-        Erstelle deine Wette, lade deine Freunde ein
-        und finde heraus, wer am Ende richtig liegt.
+        {{ "%.2f"|format(candidate['pool']) }} € gesetzt
+        · {{ candidate['bet_count'] }} Wette(n)
     </p>
 
-    <a href="/admin">🔐 Admin</a>
+    {% if candidate['factor'] %}
+    <p>
+        Faktor:
+        <strong>{{ candidate['factor'] }}</strong>
+        · Anteil: {{ candidate['share'] }} %
+    </p>
+    {% else %}
+    <p>Noch keine Wette auf diesen Kandidaten.</p>
+    {% endif %}
 
-</body>
-</html>
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+
+<hr>
+
+<p>
+    <a href="{{ url_for('result') }}">🏆 Ergebnis ansehen</a>
+</p>
+
+<p>
+    <a href="{{ url_for('admin') }}">🔐 Admin</a>
+</p>
+
+{% endblock %}
