@@ -83,7 +83,9 @@ def index():
 @app.route('/health')
 def health():
     return {'ok': True}, 200
-
+@app.route('/routes')
+def routes():
+    return jsonify([str(rule) for rule in app.url_map.iter_rules()])
 
 @app.post('/candidate')
 def add_candidate():
