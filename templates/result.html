@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Ergebnis – KÖNIGSWETTE{% endblock %}
+
+{% block content %}
+
+<h2>🏆 Ergebnis der KÖNIGSWETTE</h2>
+
+{% if winner %}
+
+<h3>👑 König: {{ winner['name'] }}</h3>
+
+<p>
+    Gesamter Wettpool:
+    <strong>{{ "%.2f"|format(total) }} €</strong>
+</p>
+
+<p>
+    Auf {{ winner['name'] }} wurden
+    <strong>{{ "%.2f"|format(winner['pool']) }} €</strong>
+    gesetzt.
+</p>
+
+<h3>💰 Auszahlungen</h3>
+
+{% if payouts %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Einsatz</th>
+            <th>Auszahlung</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for payout in payouts %}
+        <tr>
+            <td>{{ payout['name'] }}</td>
+            <td>{{ "%.2f"|format(payout['amount']) }} €</td>
+            <td><strong>{{ "%.2f"|format(payout['result']) }} €</strong></td>
+            <td>
+                {% if payout['paid'] %}
+                    ✅ Bezahlt
+                {% else %}
+                    ⏳ Offen
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<p>Auf den Gewinner wurden keine Wetten gesetzt.</p>
+
+{% endif %}
+
+{% else %}
+
+<h3>⏳ Der König steht noch nicht fest.</h3>
+
+<p>Das Ergebnis wird angezeigt, sobald der Gewinner festgelegt wurde.</p>
+
+{% endif %}
+
+<p>
+    <a href="{{ url_for('index') }}">← Zurück zur KÖNIGSWETTE</a>
+</p>
+
+{% endblock %}
