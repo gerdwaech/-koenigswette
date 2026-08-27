@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Admin – KÖNIGSWETTE{% endblock %}
+
+{% block content %}
+
+<h2>👑 Adminbereich</h2>
+
+<p>
+    Gesamt im Topf: <strong>{{ "%.2f"|format(total) }} €</strong>
+</p>
+
+<h3>Wette</h3>
+
+<form method="POST" action="{{ url_for('admin_toggle') }}">
+    <button type="submit">
+        {% if settings['is_open'] %}
+            🔒 Wette schließen
+        {% else %}
+            🔓 Wette öffnen
+        {% endif %}
+    </button>
+</form>
+
+<h3>Gewinner festlegen</h3>
+
+<form method="POST" action="{{ url_for('admin_winner') }}">
+    <label for="candidate_id">König auswählen:</label>
+
+    <select id="candidate_id" name="candidate_id" required>
+        <option value="">Bitte auswählen</option>
+
+        {% for candidate in candidates %}
+            <option value="{{ candidate['id'] }}">
+                {{ candidate['name'] }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">👑 Gewinner festlegen</button>
+</form>
+
+<h3>Wetten</h3>
+
+{% if bets %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Kandidat</th>
+            <th>Einsatz</th>
+            <th>Bezahlt</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for bet in bets %}
+        <tr>
+            <td>{{ bet['bettor_name'] }}</td>
+            <td>{{ bet['candidate_name'] }}</td>
+            <td>{{ "%.2f"|format(bet['amount']) }} €</td>
+
+            <td>
+                <form method="POST"
+                      action="{{ url_for('admin_paid', bet_id=bet['id']) }}">
+
+                    <button type="submit">
+                        {% if bet['paid'] %}
+                            ✅ Bezahlt
+                        {% else %}
+                            ❌ Offen
+                        {% endif %}
+                    </button>
+
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+
+<p>Noch keine Wetten vorhanden.</p>
+
+{% endif %}
+
+<form method="POST" action="{{ url_for('admin_logout') }}">
+    <button type="submit">Abmelden</button>
+</form>
+
+<p>
+    <a href="{{ url_for('index') }}">← Zurück zur KÖNIGSWETTE</a>
+</p>
+
+{% endblock %}
